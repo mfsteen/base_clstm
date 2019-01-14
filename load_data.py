@@ -15,7 +15,7 @@ def load_csv(input_path):
 	return result #(x, y) pairs
 
 #set batch_size = None to onehot encode the entire dataset without changing the order
-def get_onehot(pairs, batch_size):
+def get_onehot(pairs, batch_size, seq_len=1500, rand_start=False):
 	aminoAcids=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 	aa_dict = dict()
 	for i in range(len(aminoAcids)):
@@ -26,15 +26,22 @@ def get_onehot(pairs, batch_size):
 	sample = random.sample(pairs, batch_size) if batch_size is not None else pairs
 	size = len(sample)	
 
-	xData=np.zeros((size,1500,len(aminoAcids)), dtype=np.int8)
+	xData=np.zeros((size,seq_len,len(aminoAcids)), dtype=np.int8)
 	yData=np.zeros((size,num_classes), dtype=np.int8)
 	for i in range(size):
 	    y=sample[i][1]
-	    yData[i,y] = 1
+	    if y < num_classes:
+	    	yData[i,y] = 1
+	    seq = sample[i][0]
 	    counter=0
-	    for c in sample[i][0]:
+	    start=0
+	    if rand_start and len(seq) > seq_len:
+		start = random.randint(0, len(seq)-seq_len)
+	    for c in seq[start:]:
 	        xData[i,counter,aa_dict[c]] = 1
 	        counter=counter+1
+		if counter == seq_len:
+		    break
 	    if counter == 0:
 		print "empty"
 	
