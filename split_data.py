@@ -1,14 +1,21 @@
 import csv
 import numpy as np	
 
-input_filename = '../data/prokaryote_refseq_top_30_1500max.tsv'
+is_dna_data = True
 
+
+input_filename = '../data/prokaryote_refseq_top_30_1500max.tsv'
 output_dir = '/mnt/data/computervision/train80_val10_test10'
+label_filename = '../results/class_names.csv'
+
+if is_dna_data:
+	input_filename = '/mnt/data/sharing/nucleotide_annotation_data/top30_annotation_4500.tsv'
+	output_dir = '/mnt/data/computervision/dna_train80_val10_test10'
+	label_filename = '../results/dna_class_names.csv'
+
 train_filename = output_dir + '/train.csv'
 val_filename = output_dir + '/validation.csv'
 test_filename = output_dir + '/test.csv'
-
-label_filename = '../results/class_names.csv'
 
 label_mapping = dict()
 labels = []
@@ -19,7 +26,7 @@ with open(input_filename) as tsvfile:
 	i = 0
 	for row in reader:
 		if i > 0: #ignore the first line
-			x = row[3]
+			x = row[4] if is_dna_data else row[3]
 			label = row[2]
 			if not label in label_mapping:
 				label_mapping[label] = len(label_mapping)

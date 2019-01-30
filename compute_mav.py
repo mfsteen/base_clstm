@@ -3,10 +3,18 @@ from load_data import load_csv, get_onehot
 import numpy as np
 import csv
 
-num_classes = 30
+is_dna_data = True
 
-model_file = '../models/blstm_openset.h5'
+num_classes = 30
+seq_len = 4500 if is_dna_data else 1500
+model_name = 'blstm_openset'
 data_dir = '/mnt/data/computervision/train80_val10_test10'
+
+if is_dna_data:
+	model_name = 'blstm_dna_conv3_4500'
+	data_dir = '/mnt/data/computervision/dna_train80_val10_test10'
+
+model_file = '../models/' + model_name + '.h5'
 
 model = load_model(model_file)
 av_model = Model(inputs=model.input, outputs=model.get_layer("AV").output)
@@ -21,8 +29,8 @@ lower = 0
 while lower < len(train_data):
 	print lower
 	upper = min(lower + batch_size, len(train_data))
-	x, y = get_onehot(train_data[lower:upper], None)
-	pred = av_model.predict(x, batch_size=1000)
+	x, y = get_onehot(train_data[lower:upper], None, is_dna_data=is_dna_data, seq_len=seq_len)
+	pred = av_model.predict(x, batch_size=500)
 	avs.append(pred)
 	actual.append(y)
 	lower += batch_size
@@ -57,14 +65,14 @@ for i in range(num_classes):
 	distances.append(sorted(d)[-top_dist_count:])
 
 
-mean_filename = '../results/mean_activations.csv'
+mean_filename = '../results/'+model_name+'_mean_activations.csv'
 with open(mean_filename, 'w') as outfile:
 	w = csv.writer(outfile)
 	for i in range(num_classes):
 		w.writerow(means[i].tolist())
 print 'wrote ' + mean_filename
 
-dist_filename = '../results/mav_distances.csv'
+dist_filename = '../results/'+model_name+'_mav_distances.csv'
 with open(dist_filename, 'w') as outfile:
 	w = csv.writer(outfile)
 	for i in range(num_classes):

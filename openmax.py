@@ -5,32 +5,38 @@ import math
 import csv
 import libmr
 
+is_dna_data = True
+
 num_classes = 30
 
-model_file = '../models/blstm_openset.h5'
-#data_file = '/mnt/data/computervision/train80_val10_test10/test.csv'
-data_file = '/mnt/data/computervision/train80_val10_test10/unknowns.csv'
+model_name = 'blstm_dna_conv3_4500'
+data_file = '/mnt/data/computervision/dna_train80_val10_test10/test.csv'
+#data_file = '/mnt/data/computervision/dna_train80_val10_test10/unknowns.csv'
+data_divide = 4
+dist_min = 0
+dist_max = 20
 
+model_file = '../models/'+model_name+'.h5'
 model = load_model(model_file)
 av_model = Model(inputs=model.input, outputs=model.get_layer("AV").output)
 print av_model.summary()
 
-data = load_csv(data_file)
+data = load_csv(data_file, divide=data_divide)
 print len(data)
-x, y = get_onehot(data, None)
-avs = av_model.predict(x, batch_size=1000)
+x, y = get_onehot(data, None, is_dna_data=is_dna_data, seq_len=4500 if is_dna_data else 1500)
+avs = av_model.predict(x, batch_size=500)
 
 print 'done getting avs'
 del data, x, y
 
 means = []
-with open('../results/mean_activations.csv', 'r') as infile:
+with open('../results/'+model_name+'_mean_activations.csv', 'r') as infile:
 	r = csv.reader(infile)
 	for row in r:
 		means.append(np.array(row, dtype=np.float32))
 
 dists = []
-with open('../results/mav_distances.csv', 'r') as infile:
+with open('../results/'+model_name+'_mav_distances.csv', 'r') as infile:
 	r = csv.reader(infile)
 	for row in r:
 		dists.append(np.array(row, dtype=np.float32).tolist())
@@ -92,8 +98,8 @@ print "average distance: " + str(distance_sum / len(scores))
 
 thresholds = [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 0.995]
 
-for threshold in thresholds:
-	for arr in [softmaxes, scores]:
+for arr in [softmaxes, scores]:
+	for threshold in thresholds:
 		in_count = 0.0
 		out_count = 0.0
 		for score in arr:
@@ -105,7 +111,7 @@ for threshold in thresholds:
 		out_percent = out_count / (in_count + out_count)
 		print 'threshold: ' + str(threshold) + ' known: ' + str(in_percent) + ' unknown: ' + str(out_percent) 
 
-for threshold in range(20):
+for threshold in range(dist_min, dist_max):
 	in_count = 0.0
 	out_count = 0.0
 	for dist in distances:

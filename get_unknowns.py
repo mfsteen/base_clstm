@@ -1,11 +1,21 @@
 import csv
 
+is_dna_data = True
+
 input_filename = '/mnt/data/sharing/prokaryote_refseq.tsv'
 class_filename = '../results/class_names.csv'
 output_filename = '/mnt/data/computervision/train80_val10_test10/unknowns.csv'
 class_output_filename = '../results/unknown_class_names.csv'
+pair_output_filename = '../results/unknown_class_pairs.csv'
 
-data_size = 800000
+if is_dna_data:
+	input_filename = '/mnt/data/sharing/nucleotide_annotation_data/all_annotation.tsv'
+	class_filename = '../results/dna_class_names.csv'
+	output_filename = '/mnt/data/computervision/dna_train80_val10_test10/unknowns.csv'
+	class_output_filename = '../results/dna_unknown_class_names.csv'
+	pair_output_filename = '../results/dna_unknown_class_pairs.csv'
+
+data_size = 1200000 if is_dna_data else 800000
 
 class_dict = dict()
 with open(class_filename, 'r') as infile:
@@ -22,11 +32,11 @@ with open(input_filename, 'r') as tsvfile:
         i = 0
         for row in reader:
                 if i > 0: #ignore the first line
-                        x = row[3]
+                        x = row[4 if is_dna_data else 3]
                         label = row[2]
 			
                         if not label in class_dict:
-                		unknowns.append(x)
+                		unknowns.append((label, x))
 
 				if not label in unknown_class_dict:
 					unknown_class_dict[label] = 0
@@ -38,9 +48,17 @@ with open(input_filename, 'r') as tsvfile:
 		i += 1
 	print i
 
+pair_dict = dict()
+for (label, x) in unknowns:
+	if unknown_class_dict[label] >= 2:
+		if not label in pair_dict:
+			pair_dict[label] = []
+		if len(pair_dict[label]) < 2:
+			pair_dict[label].append(x)
+
 with open(output_filename, 'w') as outfile:
 	w = csv.writer(outfile)
-	for x in unknowns:
+	for (label, x) in unknowns:
 		#y is a single "unknown" class, equal to max class + 1
 		w.writerow([len(class_dict), x])
 
@@ -48,5 +66,13 @@ with open(class_output_filename, 'w') as outfile:
 	w = csv.writer(outfile)
 	for key in unknown_class_dict:
 		w.writerow([key, unknown_class_dict[key]])
-print 'wrote ' + output_filename + ', ' + class_output_filename
+
+with open(pair_output_filename, 'w') as outfile:
+	w = csv.writer(outfile)
+	i = 0
+	for key in pair_dict:
+		for x in pair_dict[key]:
+			w.writerow([i, x])
+		i += 1
+print 'wrote ' + output_filename + ', ' + class_output_filename + ', ' + pair_output_filename
 
