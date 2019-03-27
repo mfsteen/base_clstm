@@ -2,18 +2,11 @@ import csv
 
 is_dna_data = True
 
-input_filename = '/mnt/data/sharing/prokaryote_refseq.tsv'
-class_filename = '../results/class_names.csv'
-output_filename = '/mnt/data/computervision/train80_val10_test10/unknowns.csv'
-class_output_filename = '../results/unknown_class_names.csv'
-pair_output_filename = '../results/unknown_class_pairs.csv'
-
-if is_dna_data:
-	input_filename = '/mnt/data/sharing/nucleotide_annotation_data/all_annotation.tsv'
-	class_filename = '../results/dna_class_names.csv'
-	output_filename = '/mnt/data/computervision/dna_train80_val10_test10/unknowns.csv'
-	class_output_filename = '../results/dna_unknown_class_names.csv'
-	pair_output_filename = '../results/dna_unknown_class_pairs.csv'
+input_filename = '/mnt/data/sharing/nucleotide_annotation_data/all_annotation.tsv'
+class_filename = '../results/dna_1000class_names.csv'
+output_filename = '/mnt/data/computervision/dna_1000class_train80_val10_test10/unknowns.csv'
+class_output_filename = '../results/dna_unknown_1000class_names.csv'
+pair_output_filename = '../results/dna_unknown_1000class_pairs.csv'
 
 data_size = 1200000 if is_dna_data else 800000
 
@@ -53,7 +46,8 @@ for (label, x) in unknowns:
 	if unknown_class_dict[label] >= 2:
 		if not label in pair_dict:
 			pair_dict[label] = []
-		if len(pair_dict[label]) < 2:
+		p = pair_dict[label]
+		if len(p) == 0 or (len(p) == 1 and x != p[0]):
 			pair_dict[label].append(x)
 
 with open(output_filename, 'w') as outfile:
@@ -71,8 +65,9 @@ with open(pair_output_filename, 'w') as outfile:
 	w = csv.writer(outfile)
 	i = 0
 	for key in pair_dict:
-		for x in pair_dict[key]:
-			w.writerow([i, x])
-		i += 1
+		if len(pair_dict[key]) == 2:
+			for x in pair_dict[key]:
+				w.writerow([i, x])
+			i += 1
 print 'wrote ' + output_filename + ', ' + class_output_filename + ', ' + pair_output_filename
 
