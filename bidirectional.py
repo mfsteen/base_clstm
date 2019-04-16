@@ -17,20 +17,20 @@ from model_templates import original_blstm, dna_blstm, dspace
 
 is_dna_data = True
 
-num_classes = 100
+num_classes = 30
 num_letters = 4 if is_dna_data else 26
 sequence_length = 4500
 embed_size = 256
-model_name = 'blstm_dna_100class_4500'
+model_name = 'blstm_mask_dna_30class_4500'
 model_template = dna_blstm
-data_dir = '/mnt/data/computervision/dna_100class_train80_val10_test10'
+data_dir = '/mnt/data/computervision/dna_train80_val10_test10'
+mask = True
 
 
-
-logger = Logger(model_name)
+#logger = Logger(model_name)
 save_path = '../models/'+model_name+'.h5'
 
-model = model_template(num_classes, num_letters, sequence_length, embed_size=embed_size)
+model = model_template(num_classes, num_letters, sequence_length, embed_size=embed_size, mask=mask)
 model.summary()
 
 train_data = load_csv(data_dir + '/train.csv')

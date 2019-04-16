@@ -5,12 +5,12 @@ import numpy as np
 is_dna_data = True
 
 num_classes = 1000 #test classes, not train classes
-top_n = 50
+top_n = 10
 
-model_name = 'blstm_dna_100class_dspace_4500'
+model_name = 'blstm_dna_1000class_4500'
 seq_len = 4500
 #data_file = '/mnt/data/computervision/dna_train80_val10_test10/test.csv'
-data_file = '../results/dna_unknown_100class_pairs.csv'
+data_file = '../results/dna_unknown_1000class_pairs.csv'
 
 model_file = '../models/'+model_name+'.h5'
 model = load_model(model_file)

@@ -1,7 +1,7 @@
 import csv
 from keras.models import load_model
 
-model_name = 'blstm_dna_100class_4500'
+model_name = 'blstm'
 
 model = load_model('../models/'+model_name+'.h5')
 model.summary()

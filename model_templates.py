@@ -17,12 +17,14 @@ def original_blstm(num_classes, num_letters, sequence_length, embed_size=50):
 	model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 	return model
 
-def dna_blstm(num_classes, num_letters, sequence_length, embed_size=50, stride=3):
+def dna_blstm(num_classes, num_letters, sequence_length, embed_size=50, stride=3, mask=False):
 	model = Sequential()
         model.add(Conv1D(input_shape=(sequence_length, num_letters), filters=26, kernel_size=3, strides=stride, padding="valid", activation="relu"))
         model.add(Conv1D(filters=320, kernel_size=26, padding="valid", activation="relu"))
 	model.add(MaxPooling1D(pool_length=13, stride=13))
         model.add(Dropout(0.2))
+	if mask:
+		model.add(Masking(mask_value=0))
         model.add(Bidirectional(LSTM(320, activation="tanh", return_sequences=True)))
         model.add(Dropout(0.5))
         #model.add(LSTM(num_classes, activation="softmax", name="AV"))
