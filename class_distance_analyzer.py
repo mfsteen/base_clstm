@@ -4,13 +4,16 @@ import numpy as np
 
 is_dna_data = True
 
-num_classes = 1000 #test classes, not train classes
-top_n = 10
+num_classes = 10000 #test classes, not train classes
+top_n = [1, 10, 20, 50]
 
-model_name = 'blstm_dna_1000class_4500'
+model_name = 'blstm_dna_100class_dspace_4500'
 seq_len = 4500
 #data_file = '/mnt/data/computervision/dna_train80_val10_test10/test.csv'
-data_file = '../results/dna_unknown_1000class_pairs.csv'
+data_file = '../results/dna_unknown_100class_pairs.csv' #keep this 1000class so every model uses the same data
+
+mask = False
+mask_len = 113
 
 model_file = '../models/'+model_name+'.h5'
 model = load_model(model_file)
@@ -38,39 +41,31 @@ for i in range(2):
 #		print len(x)
 		chosen_data.append((x, y))
 
-x, y = get_onehot(chosen_data, None, is_dna_data=is_dna_data, seq_len=seq_len)
-embed = embed_model.predict(x)
-"""
-correct_count = 0
-for i in range(num_classes):
-	best_dist = None
-	best_index = 0
-	ex = embed[i + num_classes]
-	for j in range(num_classes):
-		dist = np.linalg.norm(ex - embed[j])
-		if best_dist == None or dist < best_dist:
-			best_dist = dist
-			best_index = j
-	if i == best_index:
-		correct_count += 1
-	print i, ":", best_index
-print correct_count
-"""
-pos_counts = []
-for _ in range(top_n):
-	pos_counts.append(0)
-correct_count = 0.0
+x, y, m = get_onehot(chosen_data, None, is_dna_data=is_dna_data, seq_len=seq_len, mask_len=mask_len if mask else None)
+embed = embed_model.predict([x,m] if mask else x)
+
+pos_counts = dict()
+correct_counts = dict()
+for n in top_n:
+	pos_counts[n] = []
+	correct_counts[n] = 0.0
+	for _ in range(n):
+		pos_counts[n].append(0)
+
 for i in range(num_classes):
 	distances = dict()
 	ex = embed[i + num_classes]
 	for j in range(num_classes):
 		dist = np.linalg.norm(ex - embed[j])
 		distances[j] = dist
-	best = sorted(distances, key=distances.get)[0:top_n]
+	best = sorted(distances, key=distances.get)#[0:top_n]
 	#print i, ":", best
-	for pos in range(top_n):
-		if best[pos] == i:
-			pos_counts[pos] += 1
-			correct_count += 1
-print pos_counts
-print correct_count/num_classes
+	for n in top_n:
+		for pos in range(n):
+			if best[pos] == i:
+				pos_counts[n][pos] += 1
+				correct_counts[n] += 1
+for n in top_n:
+	print "top", n, ":"
+	print pos_counts[n]
+	print correct_counts[n]/num_classes

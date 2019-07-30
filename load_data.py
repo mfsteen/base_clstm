@@ -1,6 +1,7 @@
 import csv
 import random
 import numpy as np
+import math
 
 random.seed(3)
 
@@ -18,7 +19,8 @@ def load_csv(input_path, divide=1):
 	return result #(x, y) pairs
 
 #set batch_size = None to onehot encode the entire dataset without changing the order
-def get_onehot(pairs, batch_size, num_classes=30, seq_len=1500, is_dna_data=False, rand_start=False):
+#mask length should be the sequence length after pooling (look at model.summary()) or None for no masking
+def get_onehot(pairs, batch_size, num_classes=30, seq_len=1500, is_dna_data=False, mask_len=None, rand_start=False):
 	letters=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 	if is_dna_data:
 		letters = ['A','C','G','T']
@@ -29,8 +31,11 @@ def get_onehot(pairs, batch_size, num_classes=30, seq_len=1500, is_dna_data=Fals
 	sample = random.sample(pairs, batch_size) if batch_size is not None else pairs
 	size = len(sample)	
 
+	has_mask = not mask_len is None
+
 	xData=np.zeros((size,seq_len,len(letters)), dtype=np.int8)
 	yData=np.zeros((size,num_classes), dtype=np.int8)
+	maskData = np.zeros((size,mask_len,1)) if has_mask else None
 	
 	total_chars = 0
 	unknown_chars = 0
@@ -55,7 +60,13 @@ def get_onehot(pairs, batch_size, num_classes=30, seq_len=1500, is_dna_data=Fals
 		    break
 	    if counter == 0:
 		print "empty"
-	print total_chars, unknown_chars
+
+	    if has_mask:
+		ratio = float(counter)/seq_len
+		stop = int(math.ceil(ratio * mask_len))
+		for j in range(stop):
+		    maskData[i][j][0] = 1
+	#print total_chars, unknown_chars
 	
-	return xData, yData
+	return xData, yData, maskData
 
