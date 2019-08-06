@@ -10,20 +10,20 @@ import numpy as np
 
 from load_data import load_csv, get_onehot
 from ml_logging import Logger
-from model_templates import original_blstm, dna_blstm, dna_mask_blstm, dspace
+from model_templates import dna_mask_blstm, aa_mask_blstm, dspace
 
 
 
 
-is_dna_data = True
+is_dna_data = False
 
-num_classes = 100
+num_classes = 30
 num_letters = 4 if is_dna_data else 26
-sequence_length = 4500
-embed_size = 128
-model_name = 'blstm_mask_dna_embed128_100class_4500'
-model_template = dna_mask_blstm
-data_dir = '/mnt/data/computervision/dna_100class_train80_val10_test10'
+sequence_length = 1500
+embed_size = 64
+model_name = 'blstm_mask_embed64_aa_30class_1500'
+model_template = aa_mask_blstm
+data_dir = '/mnt/data/computervision/train80_val10_test10'
 
 mask = True
 mask_len = 113
@@ -41,7 +41,7 @@ print len(train_data)
 #val_x, val_y = get_onehot(val_data, None, num_classes=num_classes, seq_len=sequence_length, is_dna_data=is_dna_data)
 #print len(val_data)
 
-num_episodes = 200000
+num_episodes = 50000#200000
 for i in range(num_episodes):
         x, y, m = get_onehot(train_data, 100, num_classes=num_classes, seq_len=sequence_length, is_dna_data=is_dna_data, mask_len=mask_len if mask else None)
         print i
