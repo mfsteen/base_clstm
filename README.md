@@ -6,10 +6,10 @@ bidirectional.py: trains a new model
 
 load_data.py: helper methods when loading data for a model
 
-    load_csv: given a csv where each row is (label(int), sequence(string)), returns a list of (sequence, label)
+  load_csv: given a csv where each row is (label(int), sequence(string)), returns a list of (sequence, label)
       set divide to n to keep 1/n of the data
       
-    get_onehot: given a list of (sequence, label), return a onehot encoded batch for input to the network
+  get_onehot: given a list of (sequence, label), return a onehot encoded batch for input to the network
     
 network_templates.py: defines the neural networks. For best results, 
   use dna_mask_blstm for DNA data and aa_mask_blstm for amino acid data
