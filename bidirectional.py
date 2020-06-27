@@ -1,5 +1,4 @@
-# QUESTION: why are there two seeds?
-
+#QUESTION: why are there two seeds?
 from numpy.random import seed
 seed(1)
 from tensorflow import set_random_seed
@@ -16,23 +15,19 @@ from model_templates import dna_mask_blstm, aa_mask_blstm, dspace
 
 
 
-# model can run with a DNA sequence or with a protein sequence.
-
-# QUESTION: is it right that the alternative to DNA is proteins? I think I remember you saying that
-# the alternative was amino acids, but below it says num_letters = 26 if the data is not DNA, so I
-# think I may have misheard. Either way, the types of possible input should probably be clarified.
-
+#model can run with a DNA sequence (is_dna_data = True) or with an amino acid sequence (is_dna_data = False).
 is_dna_data = False
 
 
-# num_classes is number of different possible annotations.
-# num_letters for a DNA sequence is 4 (AGCT), for a protein sequence is 26 (letters of the alphabet)
 
+#num_classes is number of different possible annotations.
 num_classes = 30
+#4 letters (ACGT) for DNA, or 26 letters of the alphabet for amino acid abbreviation
 num_letters = 4 if is_dna_data else 26
 sequence_length = 1500
 embed_size = 64
 model_name = 'blstm_mask_embed64_aa_30class_1500'
+#model_template is the new name for the aa_mask_blstm function (which is defined in model_templates.py)
 model_template = aa_mask_blstm
 data_dir = '/mnt/data/computervision/train80_val10_test10'
 
@@ -40,9 +35,12 @@ mask = True
 mask_len = 113
 
 
+#model_name defined above
 #logger = Logger(model_name)
 save_path = '../models/'+model_name+'.h5'
 
+
+#Create the keras model and print a summary of it
 model = model_template(num_classes, num_letters, sequence_length, embed_size=embed_size, mask_length=mask_len if mask else None)
 model.summary()
 

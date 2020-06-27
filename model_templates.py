@@ -50,6 +50,7 @@ def dna_mask_blstm(num_classes, num_letters, sequence_length, mask_length, embed
 	model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.001), metrics=['accuracy'])
 	return model
 
+#returns an lstm model for amino acids from keras. Inputs [x,m] and output out. x, m, and out defined below
 def aa_mask_blstm(num_classes, num_letters, sequence_length, mask_length, embed_size=256):
 	x = Input(shape=(sequence_length, num_letters))
         m = Input(shape=(mask_length, 1))
@@ -101,6 +102,6 @@ def dspace(num_classes, num_letters, sequence_length, embed_size=256):
 
 	model.add(Dense(num_classes, activation=None, name="AV"))
         model.add(Activation("softmax"))
-	
+
 	model.compile(loss='categorical_crossentropy', optimizer=Nadam(lr=0.001), metrics=['accuracy'])
         return model
