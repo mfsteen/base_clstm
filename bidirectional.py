@@ -1,3 +1,5 @@
+# QUESTION: why are there two seeds?
+
 from numpy.random import seed
 seed(1)
 from tensorflow import set_random_seed
@@ -14,8 +16,17 @@ from model_templates import dna_mask_blstm, aa_mask_blstm, dspace
 
 
 
+# model can run with a DNA sequence or with a protein sequence.
+
+# QUESTION: is it right that the alternative to DNA is proteins? I think I remember you saying that
+# the alternative was amino acids, but below it says num_letters = 26 if the data is not DNA, so I
+# think I may have misheard. Either way, the types of possible input should probably be clarified.
 
 is_dna_data = False
+
+
+# num_classes is number of different possible annotations.
+# num_letters for a DNA sequence is 4 (AGCT), for a protein sequence is 26 (letters of the alphabet)
 
 num_classes = 30
 num_letters = 4 if is_dna_data else 26
