@@ -44,6 +44,9 @@ save_path = '../models/'+model_name+'.h5'
 model = model_template(num_classes, num_letters, sequence_length, embed_size=embed_size, mask_length=mask_len if mask else None)
 model.summary()
 
+#read the first two columns of the input csv file into a list of tuples.
+#the file's second-column items become the first items in their tuples.
+#the list of tuples is called train_data
 train_data = load_csv(data_dir + '/train.csv')
 print len(train_data)
 #val_data = load_csv(data_dir + '/validation.csv', divide=2 if is_dna_data else 1)

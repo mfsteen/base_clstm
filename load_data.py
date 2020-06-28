@@ -6,7 +6,10 @@ import math
 random.seed(3)
 
 #use on the output of split_data.py
-
+#read the first two columns of a csv file into a list of tuples.
+#do this for the rows that are a multiple of "divide", the function's second argument.
+#the second-column item becomes the first item in the tuple.
+#return the list of tuples, which is called "result".
 def load_csv(input_path, divide=1):
 	result = []
 	i = 0
@@ -29,14 +32,14 @@ def get_onehot(pairs, batch_size, num_classes=30, seq_len=1500, is_dna_data=Fals
 		aa_dict[letters[i]] = i
 
 	sample = random.sample(pairs, batch_size) if batch_size is not None else pairs
-	size = len(sample)	
+	size = len(sample)
 
 	has_mask = not mask_len is None
 
 	xData=np.zeros((size,seq_len,len(letters)), dtype=np.int8)
 	yData=np.zeros((size,num_classes), dtype=np.int8)
 	maskData = np.zeros((size,mask_len,1)) if has_mask else None
-	
+
 	total_chars = 0
 	unknown_chars = 0
 
@@ -67,6 +70,5 @@ def get_onehot(pairs, batch_size, num_classes=30, seq_len=1500, is_dna_data=Fals
 		for j in range(stop):
 		    maskData[i][j][0] = 1
 	#print total_chars, unknown_chars
-	
-	return xData, yData, maskData
 
+	return xData, yData, maskData
