@@ -45,7 +45,7 @@ model = model_template(num_classes, num_letters, sequence_length, embed_size=emb
 model.summary()
 
 #read the first two columns of the input csv file into a list of tuples.
-#the file's second-column items become the first items in their tuples.
+#the file's second-column items become the first items in the tuples.
 #the list of tuples is called train_data
 train_data = load_csv(data_dir + '/train.csv')
 print len(train_data)
@@ -75,6 +75,10 @@ del train_data
 
 #del val_data, val_x, val_y
 
+#read the first two columns of the input csv file into a list of tuples.
+#the file's second-column items become the first items in the tuples.
+#do this for even-numbered rows of the csv file if is_dna_data, otherwise for every row
+#the list of tuples is called test_data
 test_data = load_csv(data_dir + '/test.csv', divide=2 if is_dna_data else 1)
 test_x, test_y, test_m = get_onehot(test_data, None, num_classes=num_classes, seq_len=sequence_length, is_dna_data=is_dna_data, mask_len=mask_len if mask else None)
 print "test accuracy: ", model.evaluate([test_x, test_m] if mask else test_x, test_y, batch_size=100)
