@@ -1,8 +1,8 @@
 #QUESTION: why are there two seeds?
 from numpy.random import seed
 seed(1)
-from tensorflow.random import set_seed
-set_seed(2)
+from tensorflow.compat.v1 import set_random_seed
+set_random_seed(2)
 
 import numpy as np
 #from keras.models import Sequential
