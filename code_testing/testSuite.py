@@ -1,4 +1,8 @@
+
+import sys
+sys.path.insert(1, "../code_development/")
 import load_data as ld
+
 import pickle
 import numpy as np
 
@@ -6,7 +10,7 @@ def test_GetResults():
     testInput = pickle.load(open("data_testing/correctOneHotIn.pickle", "rb"))
     testCorrectOut = pickle.load(open("data_testing/correctOneHotOut.pickle", "rb"))
 
-    getOneHotOut = ld.get_onehot(testInput, None)
+    getOneHotOut = ld.get_onehot(testInput, None, num_classes=3, seq_len=20)
 
 #    print(testInput)
 #    print(testCorrectOut)
