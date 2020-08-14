@@ -1,11 +1,8 @@
-#this is a test
-#test 2
-
 #QUESTION: why are there two seeds?
 from numpy.random import seed
 seed(1)
-from tensorflow import set_random_seed
-set_random_seed(2)
+from tensorflow.random import set_seed
+set_seed(2)
 
 import numpy as np
 #from keras.models import Sequential
@@ -51,16 +48,16 @@ model.summary()
 #the file's second-column items become the first items in the tuples.
 #the list of tuples is called train_data
 train_data = load_csv(data_dir + '/train.csv')
-print len(train_data)
+print(len(train_data))
 #val_data = load_csv(data_dir + '/validation.csv', divide=2 if is_dna_data else 1)
 #val_x, val_y = get_onehot(val_data, None, num_classes=num_classes, seq_len=sequence_length, is_dna_data=is_dna_data)
-#print len(val_data)
+#print(len(val_data))
 
 num_episodes = 50000#200000
 for i in range(num_episodes):
         x, y, m = get_onehot(train_data, 100, num_classes=num_classes, seq_len=sequence_length, is_dna_data=is_dna_data, mask_len=mask_len if mask else None)
-        print i
-        print model.train_on_batch([x,m] if mask else x, y)
+        print(i)
+        print(model.train_on_batch([x,m] if mask else x, y))
         if (i % 10000 == 0) or i == num_episodes - 1:
 
                 #[loss, acc] = model.evaluate(val_x, val_y, batch_size=100)
@@ -68,7 +65,7 @@ for i in range(num_episodes):
                 #logger.record_val_acc(i, acc)
 
                 model.save(save_path)
-                print 'saved to ' + save_path
+                print('saved to ' + save_path)
 del train_data
 
 #pred = model.predict(val_x, batch_size=100).argmax(axis=-1)
@@ -83,5 +80,7 @@ del train_data
 #do this for even-numbered rows of the csv file if is_dna_data, otherwise for every row
 #the list of tuples is called test_data
 test_data = load_csv(data_dir + '/test.csv', divide=2 if is_dna_data else 1)
+# change: make sure all possible letters get encoded (avoid possibility that
+# some letters might not appear in first column and mgiht not get encoded)
 test_x, test_y, test_m = get_onehot(test_data, None, num_classes=num_classes, seq_len=sequence_length, is_dna_data=is_dna_data, mask_len=mask_len if mask else None)
-print "test accuracy: ", model.evaluate([test_x, test_m] if mask else test_x, test_y, batch_size=100)
+print("test accuracy: ", model.evaluate([test_x, test_m] if mask else test_x, test_y, batch_size=100))
