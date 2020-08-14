@@ -25,13 +25,16 @@ def load_csv(input_path, divide=1):
 #mask length should be the sequence length after pooling (look at model.summary()) or None for no masking
 def get_onehot(pairs, batch_size, num_classes=30, seq_len=1500, is_dna_data=False, mask_len=None, rand_start=False):
 # change: for this function, use keras's built-in onehot encoder instead of doing it by hand
-    letters=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 # change: use list comprehension instead
-    if is_dna_data:
-        letters = ['A', 'C', 'G', 'T']
-    aa_dict = dict()
-    for i in range(len(letters)):
-        aa_dict[letters[i]] = i
+    letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    aa_dict = dict(enumerate(letters))
+    # TO DO: comment out the following code once we have automated testing
+    #letters=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    # if is_dna_data:
+    #     letters = ['A', 'C', 'G', 'T']
+    # aa_dict = dict()
+    # for i in range(len(letters)):
+    #     aa_dict[letters[i]] = i
 
     sample = random.sample(pairs, batch_size) if batch_size is not None else pairs
     size = len(sample)
