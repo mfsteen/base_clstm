@@ -1,4 +1,4 @@
-# Notes in input
+# Notes on input
 ## About test input file "test.csv"
 - Format:
   - 2 columns
@@ -21,3 +21,30 @@
       - Column one ("idx") value is '77' for 17 of the 33 rows
       - idx values that have 2 of 33 NaN rows: 15, 28, 81
       - All other idx values that have a NaN row have only 1 NaN row each
+- There are 13 letters found in the seqs
+  - Every sequence has 'A', 'C', 'G', and 'T'
+  - Some sequneces have 'D', 'H', 'K', 'M', 'R', 'S', 'W', or 'Y'
+  - This can be found using pandas and numpy:
+    - Starting with the df above, create a "cleanDF" with the "NaN"s removed
+      - `cleanDF = df[~df.seq.isna()]`
+    - Aggregrate all the letters into one *long* string (in this case >1.9B letters)
+      - `wholeStr = ''.join(cleanDF.seq.to_list()) `
+    - Now `np.unique(np.array(list(wholeStr)))` would work, but takes way too long
+      - It's helpful to break the command up into batches. I found 3 mill to work well
+        - `batchSize = 3000000`
+      - Time a single batch to get a sense of how long it will take
+        - `%time np.unique(np.array(list(wholeStr[stepNum*batchSize:(stepNum+1)*batchSize])))`
+      - Then go for it:
+        - `%time letters = [np.unique(np.array(list(wholeStr[stepNum*stepSize:(stepNum+1)*stepSize]))) for stepNum in np.arange(len(wholeStr)//stepSize)]`
+      - This doesn't get the last few rows, so if you want them, do:
+        - `%time lettersLast = np.unique(np.array(list(wholeStr[(len(wholeStr)//stepSize)*stepSize:])))`
+      - And concatenate:
+        - `allLetters = np.concatenate([letters, lettersLast])`
+      - Now you have a useful list of which letters appear in each set of 3,000,000 rows, to get the unique letters in the whole file, use:
+        - `uniqueLetters = np.unique(np.concatenate(allLetters))`
+- The sequence lengths vary from 60 to 41,364; median is 870; mean is 967
+  - `lengths = cleanDF.seq.str.len()`
+  - `lengths.min()`
+  - `lengths.max()`
+  - `lengths.median()`
+  - `lengths.mean()`
