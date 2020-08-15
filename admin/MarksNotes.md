@@ -1,0 +1,23 @@
+# Notes in input
+## About test input file "test.csv"
+- Format:
+  - 2 columns
+  - 100,000 rows
+  - Comma-separated
+  - No header
+- First column has classification
+  - Integer
+  - All values 0-99 are included; no other values
+- Second column has sequences
+  - String of varying length
+  - In 33 rows for which read_csv gets a NaN for the sequence
+    - The first is at row 27494
+    - Find all rows using pandas
+      - Step 1: Create a dataframe from the file
+        - `df = pd.DataFrame.read_csv(inFile, header=None, names=['idx', 'seq'])`
+      - Step 2: Use filtering to find rows
+        - `df[df.seq.isna()]`
+    - Brief statistics of rows with "NaN" for sequence
+      - Column one ("idx") value is '77' for 17 of the 33 rows
+      - idx values that have 2 of 33 NaN rows: 15, 28, 81
+      - All other idx values that have a NaN row have only 1 NaN row each
