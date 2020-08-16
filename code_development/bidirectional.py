@@ -30,6 +30,7 @@ model_name = 'blstm_mask_embed64_aa_30class_1500'
 #model_template is the new name for the aa_mask_blstm function (which is defined in model_templates.py)
 model_template = aa_mask_blstm
 data_dir = '/mnt/data/computervision/train80_val10_test10'
+data_dir = '../data'
 
 mask = True
 mask_len = 113
@@ -38,7 +39,7 @@ mask_len = 113
 #model_name defined above
 #logger = Logger(model_name)
 save_path = '../models/'+model_name+'.h5'
-
+save_path = '../data/'+model_name+'.h5'
 
 #Create the keras model and print a summary of it
 model = model_template(num_classes, num_letters, sequence_length, embed_size=embed_size, mask_length=mask_len if mask else None)
@@ -54,6 +55,10 @@ print(len(train_data))
 #print(len(val_data))
 
 num_episodes = 50000#200000
+# Each iteration currently takes about 6 secs, so cutting num_episodes
+# way down to be able to get to end of process in reasonable time.
+num_episodes = 5
+
 for i in range(num_episodes):
         x, y, m = get_onehot(train_data, 100, num_classes=num_classes, seq_len=sequence_length, is_dna_data=is_dna_data, mask_len=mask_len if mask else None)
         print(i)
